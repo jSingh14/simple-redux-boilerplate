@@ -1,21 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-/**
- * Import the stylesheet you want used! Here we just reference
- * the main SCSS file we have in the styles directory.
- */
+
 import './styles/main.scss';
 
-/**
- * Both configureStore and Root are required conditionally.
- * See configureStore.js and Root.js for more details.
- */
-import { configureStore } from './store/configureStore';
-import { Root } from './containers/Root';
+import configureStore from './store/configureStore';
+import {Provider} from 'react-redux'
+import App from './containers/App'
 
-const store = configureStore();
+const initialState = {}
+
+const store = configureStore(initialState);
 
 ReactDOM.render(
-  <Root store={store} />,
-  document.getElementById('root')
-);
+	<Provider store={store}>
+		<App />
+	</Provider>,
+	document.getElementById('root')
+)

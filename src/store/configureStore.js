@@ -1,15 +1,21 @@
-/**
- * Based on the current environment variable, we need to make sure
- * to exclude any DevTools-related code from the production builds.
- * The code is envify'd - using 'DefinePlugin' in Webpack.
- */
+import {createStore, applyMiddleware, compose} from 'redux';
+import rootReducer from '../reducers';
+import thunk from 'redux-thunk';
 
-let loadedStore = null;
 
-if (process.env.NODE_ENV === 'production') {
-  loadedStore = require('./configureStore.prod');
-} else {
-  loadedStore = require('./configureStore.dev');
+const finalCreateStore = compose(
+	applyMiddleware(thunk),
+)(createStore);
+
+export default function configureStore(initialState) {
+	const store = finalCreateStore(rootReducer, initialState);
+
+	// Hot reload reducers (requires Webpack or Browserify HMR to be enabled)
+	if (module.hot) {
+		module.hot.accept('../reducers', () =>
+			store.replaceReducer(require('../reducers'))
+		);
+	}
+
+	return store;
 }
-
-export const configureStore = loadedStore;
